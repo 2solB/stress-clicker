@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스트레스 해소 클리커</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .stress-display {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+        }
+
+        .stress-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stress-amount {
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .per-second {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .click-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .click-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .click-button:active {
+            transform: scale(0.95);
+        }
+
+        .click-effect {
+            position: absolute;
+            color: #FFD700;
+            font-size: 24px;
+            font-weight: bold;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px);
+            }
+        }
+
+        .upgrades {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .upgrades h2 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .upgrade-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .upgrade-item:hover {
+            transform: translateX(5px);
+            background: #e9ecef;
+        }
+
+        .upgrade-info {
+            flex: 1;
+        }
+
+        .upgrade-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .upgrade-description {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .upgrade-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .upgrade-button:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .upgrade-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .motivational-text {
+            margin-top: 20px;
+            font-style: italic;
+            color: #999;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🏢 스트레스 해소 클리커</h1>
+        <p class="subtitle">상사 몰래 스트레스를 낮춰보세요!</p>
+
+        <div class="stress-display">
+            <div class="stress-label">해소한 스트레스</div>
+            <div class="stress-amount" id="stressAmount">0</div>
+            <div class="per-second">초당 <span id="perSecond">0.5</span> 해소 중</div>
+        </div>
+
+        <button class="click-button" id="clickButton">
+            😤<br>클릭!
+        </button>
+
+        <div class="upgrades">
+            <h2>💼 스트레스 해소 도구</h2>
+            
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">☕ 커피 한 잔 (<span id="coffeeCount">0</span>)</div>
+                    <div class="upgrade-description">초당 +1 스트레스 해소</div>
+                </div>
+                <button class="upgrade-button" id="coffeeBtn">
+                    <span id="coffeeCost">10</span> 구매
+                </button>
+            </div>
+
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">🎧 음악 듣기 (<span id="musicCount">0</span>)</div>
+                    <div class="upgrade-description">초당 +5 스트레스 해소</div>
+                </div>
+                <button class="upgrade-button" id="musicBtn">
+                    <span id="musicCost">50</span> 구매
+                </button>
+            </div>
+
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">🌿 화분 키우기 (<span id="plantCount">0</span>)</div>
+                    <div class="upgrade-description">초당 +20 스트레스 해소</div>
+                </div>
+                <button class="upgrade-button" id="plantBtn">
+                    <span id="plantCost">200</span> 구매
+                </button>
+            </div>
+
+            <div class="upgrade-item">
+                <div class="upgrade-info">
+                    <div class="upgrade-name">🏖️ 휴가 계획 (<span id="vacationCount">0</span>)</div>
+                    <div class="upgrade-description">초당 +100 스트레스 해소</div>
+                </div>
+                <button class="upgrade-button" id="vacationBtn">
+                    <span id="vacationCost">1000</span> 구매
+                </button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div>총 클릭 횟수: <strong><span id="totalClicks">0</span></strong></div>
+            <div>클릭당 해소량: <strong><span id="clickPower">1</span></strong></div>
+        </div>
+
+        <div class="motivational-text" id="motivText">
+            "화이팅! 스트레스를 날려버리세요 💪"
+        </div>
+    </div>
+
+    <script>
+        // 게임 상태
+        let stress = 0;
+        let stressPerSecond = 0;
+        let stressPerClick = 1;
+        let totalClicks = 0;
+
+        // 업그레이드 상태
+        const upgrades = {
+            coffee: { count: 0, cost: 10, production: 1, costMultiplier: 1.15 },
+            music: { count: 0, cost: 50, production: 5, costMultiplier: 1.15 },
+            plant: { count: 0, cost: 200, production: 20, costMultiplier: 1.15 },
+            vacation: { count: 0, cost: 1000, production: 100, costMultiplier: 1.15 }
+        };
+
+        // DOM 요소
+        const stressAmountEl = document.getElementById('stressAmount');
+        const perSecondEl = document.getElementById('perSecond');
+        const clickButton = document.getElementById('clickButton');
+        const totalClicksEl = document.getElementById('totalClicks');
+        const clickPowerEl = document.getElementById('clickPower');
+        const motivTextEl = document.getElementById('motivText');
+
+        // 동기부여 메시지
+        const motivationalMessages = [
+            "화이팅! 스트레스를 날려버리세요 💪",
+            "잘하고 있어요! 계속 해소하세요! 😊",
+            "점심시간이 기다려져요! 🍱",
+            "퇴근까지 조금만 더! 🏃‍♂️",
+            "당신은 할 수 있어요! ✨",
+            "스트레스 프리 존! 🌈",
+            "릴렉스~~ 😌",
+            "오늘도 수고했어요! 👏"
+        ];
+
+        // 클릭 이벤트
+        clickButton.addEventListener('click', (e) => {
+            stress += stressPerClick;
+            totalClicks++;
+            updateDisplay();
+
+            // 클릭 효과
+            showClickEffect(e);
+
+            // 버튼 애니메이션
+            clickButton.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                clickButton.style.transform = 'scale(1)';
+            }, 100);
+        });
+
+        // 클릭 효과 표시
+        function showClickEffect(e) {
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            effect.textContent = `+${stressPerClick}`;
+            
+            const rect = clickButton.getBoundingClientRect();
+            effect.style.left = (e.clientX - rect.left) + 'px';
+            effect.style.top = (e.clientY - rect.top) + 'px';
+            
+            clickButton.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 1000);
+        }
+
+        // 업그레이드 구매
+        function buyUpgrade(type) {
+            const upgrade = upgrades[type];
+            if (stress >= upgrade.cost) {
+                stress -= upgrade.cost;
+                upgrade.count++;
+                stressPerSecond += upgrade.production;
+                upgrade.cost = Math.floor(upgrade.cost * upgrade.costMultiplier);
+                updateDisplay();
+                updateUpgradeButtons();
+            }
+        }
+
+        // 업그레이드 버튼 설정
+        document.getElementById('coffeeBtn').addEventListener('click', () => buyUpgrade('coffee'));
+        document.getElementById('musicBtn').addEventListener('click', () => buyUpgrade('music'));
+        document.getElementById('plantBtn').addEventListener('click', () => buyUpgrade('plant'));
+        document.getElementById('vacationBtn').addEventListener('click', () => buyUpgrade('vacation'));
+
+        // 화면 업데이트
+        function updateDisplay() {
+            stressAmountEl.textContent = Math.floor(stress).toLocaleString();
+            perSecondEl.textContent = (0.5 + stressPerSecond).toLocaleString();
+            totalClicksEl.textContent = totalClicks.toLocaleString();
+            clickPowerEl.textContent = stressPerClick.toLocaleString();
+            
+            updateUpgradeButtons();
+            updateMotivationalMessage();
+        }
+
+        // 업그레이드 버튼 상태 업데이트
+        function updateUpgradeButtons() {
+            updateUpgradeButton('coffee');
+            updateUpgradeButton('music');
+            updateUpgradeButton('plant');
+            updateUpgradeButton('vacation');
+        }
+
+        function updateUpgradeButton(type) {
+            const upgrade = upgrades[type];
+            const btn = document.getElementById(`${type}Btn`);
+            const costEl = document.getElementById(`${type}Cost`);
+            const countEl = document.getElementById(`${type}Count`);
+            
+            costEl.textContent = Math.floor(upgrade.cost).toLocaleString();
+            countEl.textContent = upgrade.count;
+            btn.disabled = stress < upgrade.cost;
+        }
+
+        // 동기부여 메시지 업데이트
+        function updateMotivationalMessage() {
+            if (stress >= 10000) {
+                motivTextEl.textContent = "와우! 스트레스 마스터! 🏆";
+            } else if (stress >= 5000) {
+                motivTextEl.textContent = "거의 다 왔어요! 대단해요! 🎉";
+            } else if (stress >= 1000) {
+                motivTextEl.textContent = "훌륭해요! 계속 가세요! 🚀";
+            } else if (stress >= 100) {
+                motivTextEl.textContent = "좋아요! 잘 하고 있어요! 👍";
+            }
+        }
+
+        // 자동 증가 (2초당 1씩 기본 + 업그레이드 효과)
+        setInterval(() => {
+            stress += 0.5 / 10; // 2초당 1씩 = 초당 0.5
+            if (stressPerSecond > 0) {
+                stress += stressPerSecond / 10;
+            }
+            updateDisplay();
+        }, 100);
+
+        // 동기부여 메시지 랜덤 변경
+        setInterval(() => {
+            const randomMessage = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+            if (stress < 100) {
+                motivTextEl.textContent = randomMessage;
+            }
+        }, 10000);
+
+        // 초기 화면 업데이트
+        updateDisplay();
+    </script>
+</body>
+</html>
